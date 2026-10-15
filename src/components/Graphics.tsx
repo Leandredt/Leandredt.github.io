@@ -34,53 +34,48 @@ export function ModelShare({ missions, labels, unit }: { missions: Mission[]; la
   );
 }
 
-/** Frise du parcours. */
-export function Timeline({ items, kinds }: { items: Extra["path"]["items"]; kinds: Record<string, string> }) {
+/** Frise du parcours : points sobres, le dernier jalon en accent. */
+export function Timeline({ items }: { items: Extra["path"]["items"] }) {
   return (
-    <>
-      <ul className="legend">
-        {Object.entries(kinds).map(([k, v]) => (
-          <li key={k}>
-            <i className={`dot ${k}`} /> {v}
-          </li>
-        ))}
-      </ul>
-      <ol className="timeline">
-        {items.map((it) => (
-          <li key={it.when + it.what} className={it.kind}>
-            <span className="when">{it.when}</span>
-            <i className={`pin ${it.kind}`} />
-            <b>{it.what}</b>
-            <small>{it.where}</small>
-          </li>
-        ))}
-      </ol>
-    </>
+    <ol className="timeline">
+      {items.map((it, i) => (
+        <li key={it.when + it.what} className={i === items.length - 1 ? "last" : ""}>
+          <span className="when">{it.when}</span>
+          <i className="pin" />
+          <b>{it.what}</b>
+          <small>{it.where}</small>
+        </li>
+      ))}
+    </ol>
   );
 }
 
-/** Protocole d'évaluation : orchestrateur → deux agents → trois juges → classement. */
-export function EvalDiagram({ t }: { t: Extra["evalD"] }) {
-  const box = (x: number, y: number, w: number, label: string, cls: string, sub?: string) => (
-    <g key={label + x}>
-      <rect x={x} y={y} width={w} height={sub ? 54 : 44} rx={10} className={`svgBox ${cls}`} />
-      <text x={x + w / 2} y={y + (sub ? 24 : 27)} textAnchor="middle" className="svgT">{label}</text>
-      {sub && <text x={x + w / 2} y={y + 42} textAnchor="middle" className="svgS">{sub}</text>}
-    </g>
-  );
-  const line = (x1: number, y1: number, x2: number, y2: number) => <path key={`${x1}${y1}${x2}${y2}`} d={`M${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`} className="svgLine" />;
+/** Protocole d'évaluation en colonnes : s'empile verticalement sur téléphone. */
+export function EvalFlow({ t }: { t: Extra["evalD"] }) {
   return (
-    <svg viewBox="0 0 760 250" role="img" aria-label={t.title} className="evalSvg">
-      {line(150, 125, 230, 60)}
-      {line(150, 125, 230, 190)}
-      {[40, 125, 210].map((y) => [line(350, 60, 470, y + 22), line(350, 190, 470, y + 22)])}
-      {[40, 125, 210].map((y) => line(590, y + 22, 650, 125))}
-      {box(20, 98, 130, t.orch, "det", `${t.cases} · ${t.runs}`)}
-      {box(230, 33, 120, t.a, "llm")}
-      {box(230, 163, 120, t.b, "llm")}
-      {[40, 125, 210].map((y, i) => box(470, y, 120, `J${i + 1}`, "llm", t.models))}
-      {box(650, 103, 100, t.rank, "det")}
-      <text x={530} y={20} textAnchor="middle" className="svgS">{t.judges}</text>
-    </svg>
+    <div className="evalFlow" role="img" aria-label={t.title}>
+      <div className="col">
+        <div className="node det">
+          <b>{t.orch}</b>
+          <small>{t.cases}<br />{t.runs}</small>
+        </div>
+      </div>
+      <div className="col">
+        <div className="node llm"><b>{t.a}</b></div>
+        <div className="node llm"><b>{t.b}</b></div>
+      </div>
+      <div className="col">
+        {[1, 2, 3].map((n) => (
+          <div className="node llm" key={n}>
+            <b>J{n}</b>
+            <small>{t.models}</small>
+          </div>
+        ))}
+      </div>
+      <div className="col">
+        <div className="node det"><b>{t.rank}</b></div>
+      </div>
+      <p className="evalCap">{t.judges}</p>
+    </div>
   );
 }

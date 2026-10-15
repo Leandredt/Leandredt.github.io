@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { copy, type Lang } from "./content";
 import { extra } from "./extra";
 import { Legend, Trace } from "./components/Trace";
-import { EvalDiagram, ModelShare, Timeline } from "./components/Graphics";
+import { EvalFlow, ModelShare, Timeline } from "./components/Graphics";
 import { Missions } from "./components/Missions";
 import { PolicySim } from "./components/PolicySim";
+import { Reveal, Segmented } from "./components/ui";
 
 function initialLang(): Lang {
   try {
@@ -14,6 +15,20 @@ function initialLang(): Lang {
     // stockage indisponible : on retombe sur la langue du navigateur
   }
   return navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en";
+}
+
+function Section({ id, title, lead, tone, children }: { id: string; title: string; lead: string; tone?: "alt"; children: React.ReactNode }) {
+  return (
+    <section id={id} className={`block ${tone ?? ""}`}>
+      <div className="wrap">
+        <Reveal>
+          <h2>{title}</h2>
+          <p className="lead">{lead}</p>
+        </Reveal>
+        <Reveal delay={0.05}>{children}</Reveal>
+      </div>
+    </section>
+  );
 }
 
 export function App() {
@@ -36,100 +51,98 @@ export function App() {
   return (
     <>
       <header className="topbar">
-        <a href="#top" className="brand">LDT</a>
-        <nav aria-label="Navigation">
-          <a href="#parcours">{x.nav.path}</a>
-          <a href="#realisations">{x.nav.work}</a>
-          <a href="#methode">{x.nav.method}</a>
-          <a href="#os">{x.nav.os}</a>
-          <a href="#contact">{x.nav.contact}</a>
-          <button className="lang" onClick={() => setLang(lang === "fr" ? "en" : "fr")} aria-label={lang === "fr" ? "Switch to English" : "Passer en français"}>
-            {lang === "fr" ? "EN" : "FR"}
-          </button>
-        </nav>
+        <div className="topInner">
+          <a href="#top" className="brand">Léandre D.-T.</a>
+          <nav aria-label="Navigation">
+            <a href="#parcours">{x.nav.path}</a>
+            <a href="#realisations">{x.nav.work}</a>
+            <a href="#methode">{x.nav.method}</a>
+            <a href="#os">{x.nav.os}</a>
+            <a href="#contact">{x.nav.contact}</a>
+            <button className="lang" onClick={() => setLang(lang === "fr" ? "en" : "fr")} aria-label={lang === "fr" ? "Switch to English" : "Passer en français"}>
+              {lang === "fr" ? "EN" : "FR"}
+            </button>
+          </nav>
+        </div>
       </header>
 
       <main id="top">
-        <section className="hero wrap">
-          <p className="kicker">{t.hero.kicker}</p>
-          <h1>{t.hero.title}</h1>
-          <p className="lead">{profile.lead}</p>
-          <div className="profiles" role="group" aria-label="Profil">
-            {t.profiles.map((p) => (
-              <button
-                key={p.id}
-                aria-pressed={p.id === profile.id}
-                onClick={() => {
-                  setProfileId(p.id);
-                  history.replaceState(null, "", `?p=${p.id}`);
+        <section className="hero">
+          <div className="wrap">
+            <Reveal>
+              <p className="kicker">{t.hero.kicker}</p>
+              <h1>{t.hero.title}</h1>
+              <p className="sub">{profile.lead}</p>
+              <Segmented
+                id="profile"
+                label="Profil"
+                value={profile.id}
+                options={t.profiles.map((p) => ({ id: p.id, label: p.label }))}
+                onChange={(id) => {
+                  setProfileId(id);
+                  history.replaceState(null, "", `?p=${id}`);
                 }}
-              >
-                {p.label}
-              </button>
-            ))}
+              />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <ul className="kpis">
+                {x.kpis.map((k) => (
+                  <li key={k.l}>
+                    <strong>{k.v}</strong>
+                    <span>{k.l}</span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
           </div>
-          <ul className="kpis">
-            {x.kpis.map((k) => (
-              <li key={k.l}>
-                <strong>{k.v}</strong>
-                <span>{k.l}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        <section id="parcours" className="wrap">
-          <h2>{x.path.title}</h2>
-          <p className="lead">{x.path.lead}</p>
-          <Timeline items={x.path.items} kinds={x.path.kinds} />
-        </section>
+        <Section id="parcours" title={x.path.title} lead={x.path.lead} tone="alt">
+          <Timeline items={x.path.items} />
+        </Section>
 
-        <section id="realisations" className="wrap">
-          <h2>{x.work.title}</h2>
-          <p className="lead">{x.work.lead}</p>
+        <Section id="realisations" title={x.work.title} lead={x.work.lead}>
           <Missions key={profile.id} t={t.missions} list={missions} headline={x.headline} open={x.work.open} close={x.work.close} />
-        </section>
+        </Section>
 
-        <section id="methode" className="wrap">
-          <h2>{x.share.title}</h2>
-          <p className="lead">{x.share.lead}</p>
+        <Section id="methode" title={x.share.title} lead={x.share.lead} tone="alt">
           <ModelShare missions={missions} labels={t.hero.legend} unit={x.share.unit} />
-          <div className="split">
-            <div>
-              <h2>{x.evalD.title}</h2>
-              <p className="lead">{x.evalD.lead}</p>
-              <EvalDiagram t={x.evalD} />
-            </div>
-            <div>
-              <h2 className="small">{t.hero.traceTitle}</h2>
-              <Legend labels={t.hero.legend} />
-              <Trace spans={t.spans} hint={t.hero.traceHint} />
-            </div>
+          <div className="subhead">
+            <h3>{x.evalD.title}</h3>
+            <p className="lead">{x.evalD.lead}</p>
           </div>
-        </section>
+          <EvalFlow t={x.evalD} />
+          <div className="subhead">
+            <h3>{t.hero.traceTitle}</h3>
+          </div>
+          <Legend labels={t.hero.legend} />
+          <Trace spans={t.spans} hint={t.hero.traceHint} />
+        </Section>
 
-        <section id="os" className="wrap">
-          <h2>{t.os.title}</h2>
-          <p className="lead">{t.os.lead}</p>
+        <Section id="os" title={t.os.title} lead={t.os.lead}>
           <ol className="flow">
             {x.flow.map((f) => (
               <li key={f}>{f}</li>
             ))}
           </ol>
           <PolicySim t={t.os} calls={t.calls} />
-        </section>
+        </Section>
 
-        <section id="contact" className="wrap contact">
-          <h2>{t.contact.title}</h2>
-          <p className="lead">{t.contact.lead}</p>
-          <p className="links">
-            <a href="mailto:leandredurandterrasson@gmail.com">leandredurandterrasson@gmail.com</a>
-            <a href="https://www.linkedin.com/in/leandre-dt">LinkedIn</a>
-            <a href="https://github.com/Leandredt">GitHub</a>
-          </p>
+        <section id="contact" className="block alt contact">
+          <div className="wrap">
+            <Reveal>
+              <h2>{t.contact.title}</h2>
+              <p className="lead">{t.contact.lead}</p>
+              <p className="links">
+                <a className="btn" href="mailto:leandredurandterrasson@gmail.com">E-mail</a>
+                <a className="btn ghost" href="https://www.linkedin.com/in/leandre-dt">LinkedIn</a>
+                <a className="btn ghost" href="https://github.com/Leandredt">GitHub</a>
+              </p>
+            </Reveal>
+          </div>
         </section>
       </main>
-      <footer className="wrap foot">{t.footer}</footer>
+      <footer className="foot">{t.footer}</footer>
     </>
   );
 }
