@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { copy, type Lang } from "./content";
 import { extra } from "./extra";
 import { Legend, Trace } from "./components/Trace";
-import { EvalFlow, ModelShare, Timeline } from "./components/Graphics";
+import { EvalSteps, Jarvis, ModelShare, Timeline } from "./components/Graphics";
 import { Missions } from "./components/Missions";
-import { PolicySim } from "./components/PolicySim";
 import { Reveal, Segmented } from "./components/ui";
 
 function initialLang(): Lang {
@@ -71,6 +70,10 @@ export function App() {
           <div className="wrap">
             <Reveal>
               <p className="kicker">{t.hero.kicker}</p>
+              <p className="reach">
+                <a href="mailto:leandredurandterrasson@gmail.com">leandredurandterrasson@gmail.com</a>
+                <a href="tel:+33767951494">07 67 95 14 94</a>
+              </p>
               <h1>{t.hero.title}</h1>
               <p className="sub">{profile.lead}</p>
               <Segmented
@@ -111,21 +114,17 @@ export function App() {
             <h3>{x.evalD.title}</h3>
             <p className="lead">{x.evalD.lead}</p>
           </div>
-          <EvalFlow t={x.evalD} />
+          <EvalSteps t={x.evalD} />
           <div className="subhead">
-            <h3>{t.hero.traceTitle}</h3>
+            <h3>{x.trace.title}</h3>
+            <p className="lead">{x.trace.caption}</p>
           </div>
           <Legend labels={t.hero.legend} />
           <Trace spans={t.spans} hint={t.hero.traceHint} />
         </Section>
 
-        <Section id="os" title={t.os.title} lead={t.os.lead}>
-          <ol className="flow">
-            {x.flow.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ol>
-          <PolicySim t={t.os} calls={t.calls} />
+        <Section id="os" title={x.jarvis.title} lead={x.jarvis.lead}>
+          <Jarvis t={x.jarvis} />
         </Section>
 
         <section id="contact" className="block alt contact">

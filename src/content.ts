@@ -26,23 +26,15 @@ export interface Span {
   dur: number;
   note: string;
 }
-export interface Call {
-  label: string;
-  tool: string;
-  risk: "read" | "write" | "external" | "destructive";
-}
 
 interface Copy {
   nav: { missions: string; os: string; rigor: string; contact: string };
-  hero: { kicker: string; title: string; lead: string; cta: string; legend: Record<Kind, string>; traceTitle: string; traceHint: string };
+  hero: { kicker: string; title: string; lead: string; cta: string; legend: Record<Kind, string>; traceHint: string };
   missions: { title: string; lead: string; labels: { problem: string; constraint: string; pipeline: string; guardrails: string; result: string; stack: string }; ratio: (d: number, l: number, h: number) => string; clickHint: string };
-  os: { title: string; lead: string; policy: string; run: string; log: string; empty: string; timeout: string; outcome: Record<"allow" | "approve" | "deny", string>; risk: Record<Call["risk"], string>; levels: Record<"allow" | "approve" | "deny", string> };
-  rigor: { title: string; lead: string; rows: { value: string; label: string; note: string }[] };
   contact: { title: string; lead: string; cv: string };
   footer: string;
   missionsList: Mission[];
   spans: Span[];
-  calls: Call[];
   profiles: { id: string; label: string; lead: string; order: string[] }[];
 }
 
@@ -55,7 +47,6 @@ export const copy: Record<Lang, Copy> = {
       lead: "Élève-ingénieur Data Science & IA (ESILV). Mon réflexe : décider, étape par étape, ce que le modèle fait et ce que le code garantit.",
       cta: "Voir les missions",
       legend: { det: "Code déterministe", llm: "Modèle appris", human: "Humain dans la boucle" },
-      traceTitle: "Une requête, vue de l'intérieur (trace illustrative et simplifiée)",
       traceHint: "Cliquez une étape.",
     },
     missions: {
@@ -64,28 +55,6 @@ export const copy: Record<Lang, Copy> = {
       labels: { problem: "Problème", constraint: "Contrainte", pipeline: "Pipeline", guardrails: "Garde-fous", result: "Résultat", stack: "Pile" },
       ratio: (d, l, h) => `${d} par le code · ${l} par un modèle · ${h} par un humain`,
       clickHint: "Cliquez une étape pour lire le choix.",
-    },
-    os: {
-      title: "Mon OS d'agents",
-      lead: "Jarvis OS : un noyau local qui fait agir des agents via MCP, sous gouvernance. Réglez la politique, lancez des actions : voyez ce qui passe, ce qui attend un humain, ce qui est refusé.",
-      policy: "Politique par niveau de risque",
-      run: "Lancer",
-      log: "Journal d'audit",
-      empty: "Aucune action lancée.",
-      timeout: "Sans réponse sous 300 s, une demande d'approbation est refusée.",
-      outcome: { allow: "exécutée, journalisée", approve: "en attente d'un humain", deny: "refusée" },
-      risk: { read: "lecture", write: "écriture", external: "externe", destructive: "destructif" },
-      levels: { allow: "libre", approve: "approbation", deny: "refus" },
-    },
-    rigor: {
-      title: "Ce que je mesure",
-      lead: "Les chiffres des dépôts, avec leur périmètre. Les mauvais aussi.",
-      rows: [
-        { value: "−40 %", label: "temps de revue de code", note: "Agent CI/CD, projet aéronautique (version publique anonymisée)." },
-        { value: "+14 %", label: "rappel sur la fraude", note: "Modèle hybride contre autoencodeur, données déséquilibrées." },
-        { value: "81 %", label: "précision", note: "Prédiction d'effets secondaires de médicaments, projet d'équipe." },
-        { value: "0,10", label: "MRR, TransE", note: "Graphe de connaissances Jazz (~50 000 triplets). DistMult : 0,08. Publié tel quel." },
-      ],
     },
     contact: { title: "Parlons-en", lead: "Je cherche un rôle tourné vers le déploiement d'IA générative chez des clients : Forward Deployed Engineer, AI Solutions Engineer.", cv: "Télécharger le CV" },
     footer: "Fait main, sans traceur.",
@@ -171,13 +140,6 @@ export const copy: Record<Lang, Copy> = {
       { name: "verify", kind: "det", start: 70, dur: 10, note: "Le code applique les règles dures. Une sortie qui les viole est corrigée ici." },
       { name: "review", kind: "human", start: 80, dur: 20, note: "La correctrice accepte ou refuse chaque correction." },
     ],
-    calls: [
-      { label: "Lire un fichier du Bureau", tool: "read_file", risk: "read" },
-      { label: "Enregistrer une note", tool: "write_file", risk: "write" },
-      { label: "Piloter une application (AppleScript)", tool: "run_applescript", risk: "external" },
-      { label: "Supprimer un dossier", tool: "delete_path", risk: "destructive" },
-      { label: "Oublier un souvenir", tool: "memory_forget", risk: "destructive" },
-    ],
     profiles: [
       { id: "conseil", label: "Conseil & ESN", lead: "Cadrer, prototyper en quelques semaines, mesurer, faire adopter : l'IA générative au plus près des équipes métier.", order: ["eight", "editorial", "ci", "fraud"] },
       { id: "finance", label: "Banque & assurance", lead: "Des agents que l'on peut auditer : évaluation indépendante, garde-fous dans le code, humain dans la boucle.", order: ["eight", "ci", "fraud", "editorial"] },
@@ -192,7 +154,6 @@ export const copy: Record<Lang, Copy> = {
       lead: "Data Science & AI engineering student (ESILV). My habit: decide, step by step, what the model does and what the code guarantees.",
       cta: "See the missions",
       legend: { det: "Deterministic code", llm: "Learned model", human: "Human in the loop" },
-      traceTitle: "One request, seen from the inside (illustrative, simplified trace)",
       traceHint: "Click a step.",
     },
     missions: {
@@ -201,28 +162,6 @@ export const copy: Record<Lang, Copy> = {
       labels: { problem: "Problem", constraint: "Constraint", pipeline: "Pipeline", guardrails: "Guardrails", result: "Result", stack: "Stack" },
       ratio: (d, l, h) => `${d} by code · ${l} by a model · ${h} by a human`,
       clickHint: "Click a step to read the reasoning.",
-    },
-    os: {
-      title: "My agent OS",
-      lead: "Jarvis OS: a local kernel that runs agents through MCP, under governance. Set the policy, run actions: see what goes through, what waits for a human, what is refused.",
-      policy: "Policy per risk level",
-      run: "Run",
-      log: "Audit log",
-      empty: "No action run yet.",
-      timeout: "With no answer within 300 s, an approval request is refused.",
-      outcome: { allow: "executed, logged", approve: "waiting for a human", deny: "refused" },
-      risk: { read: "read", write: "write", external: "external", destructive: "destructive" },
-      levels: { allow: "free", approve: "approval", deny: "deny" },
-    },
-    rigor: {
-      title: "What I measure",
-      lead: "Figures from the repositories, with their scope. The poor ones too.",
-      rows: [
-        { value: "−40%", label: "code review time", note: "CI/CD agent, aerospace project (anonymised public version)." },
-        { value: "+14%", label: "recall on fraud", note: "Hybrid model versus autoencoder, imbalanced data." },
-        { value: "81%", label: "accuracy", note: "Drug side-effect prediction, team project." },
-        { value: "0.10", label: "MRR, TransE", note: "Jazz knowledge graph (~50,000 triples). DistMult: 0.08. Published as is." },
-      ],
     },
     contact: { title: "Let's talk", lead: "I am looking for a role focused on deploying generative AI at clients: Forward Deployed Engineer, AI Solutions Engineer.", cv: "Download the CV" },
     footer: "Handmade, no trackers.",
@@ -307,13 +246,6 @@ export const copy: Record<Lang, Copy> = {
       { name: "draft", kind: "llm", start: 30, dur: 40, note: "The model fixes the substance with a minimal-intervention instruction." },
       { name: "verify", kind: "det", start: 70, dur: 10, note: "Code applies the hard rules. An output that breaks them is fixed here." },
       { name: "review", kind: "human", start: 80, dur: 20, note: "The proofreader accepts or rejects each correction." },
-    ],
-    calls: [
-      { label: "Read a file on the Desktop", tool: "read_file", risk: "read" },
-      { label: "Save a note", tool: "write_file", risk: "write" },
-      { label: "Drive an application (AppleScript)", tool: "run_applescript", risk: "external" },
-      { label: "Delete a folder", tool: "delete_path", risk: "destructive" },
-      { label: "Forget a memory", tool: "memory_forget", risk: "destructive" },
     ],
     profiles: [
       { id: "conseil", label: "Consulting", lead: "Scope, prototype within weeks, measure, drive adoption: generative AI close to the business teams.", order: ["eight", "editorial", "ci", "fraud"] },

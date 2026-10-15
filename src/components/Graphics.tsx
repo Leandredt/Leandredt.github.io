@@ -50,32 +50,59 @@ export function Timeline({ items }: { items: Extra["path"]["items"] }) {
   );
 }
 
-/** Protocole d'évaluation en colonnes : s'empile verticalement sur téléphone. */
-export function EvalFlow({ t }: { t: Extra["evalD"] }) {
+/** Protocole d'évaluation en quatre chiffres, puis les réflexes communs à tous les projets. */
+export function EvalSteps({ t }: { t: Extra["evalD"] }) {
   return (
-    <div className="evalFlow" role="img" aria-label={t.title}>
-      <div className="col">
-        <div className="node det">
-          <b>{t.orch}</b>
-          <small>{t.cases}<br />{t.runs}</small>
-        </div>
-      </div>
-      <div className="col">
-        <div className="node llm"><b>{t.a}</b></div>
-        <div className="node llm"><b>{t.b}</b></div>
-      </div>
-      <div className="col">
-        {[1, 2, 3].map((n) => (
-          <div className="node llm" key={n}>
-            <b>J{n}</b>
-            <small>{t.models}</small>
-          </div>
+    <>
+      <ol className="evalSteps">
+        {t.steps.map((s) => (
+          <li key={s.l}>
+            <strong>{s.n}</strong>
+            <b>{s.l}</b>
+            <span>{s.d}</span>
+          </li>
         ))}
-      </div>
-      <div className="col">
-        <div className="node det"><b>{t.rank}</b></div>
-      </div>
-      <p className="evalCap">{t.judges}</p>
+      </ol>
+      <h4 className="principlesTitle">{t.principlesTitle}</h4>
+      <ul className="principles">
+        {t.principles.map((p) => (
+          <li key={p.t}>
+            <b>{p.t}</b>
+            <span>{p.d}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+/** Jarvis OS en un coup d'œil : l'escalade du risque et ce qui se passe à chaque niveau. */
+export function Jarvis({ t }: { t: Extra["jarvis"] }) {
+  return (
+    <div className="jarvis">
+      <ul className="jfacts">
+        {t.facts.map((f) => (
+          <li key={f.l}>
+            <strong>{f.v}</strong>
+            <span>{f.l}</span>
+          </li>
+        ))}
+      </ul>
+      <ol className="ladder">
+        {t.levels.map((l, i) => (
+          <li key={l.name}>
+            <span className="meter" aria-hidden="true">
+              {t.levels.map((_, k) => (
+                <i key={k} className={k <= i ? (l.free ? "on" : "on hot") : ""} />
+              ))}
+            </span>
+            <span className="lname">{l.name}</span>
+            <span className="lex">{l.example}</span>
+            <span className={`verdictPill ${l.free ? "free" : "human"}`}>{l.verdict}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="hint">{t.note}</p>
     </div>
   );
 }
